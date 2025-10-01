@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if post %}{{ post.titulo }} - Cogito{% else %}Postagem não encontrada - Cogito{% endif %}</title>
+    <link rel="stylesheet" href="/static/style/verpostagem.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Peta:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="site-wrap">
+        <header>
+            <nav class="nav" aria-label="Principal">
+                <a href="/" class="logo" aria-label="Página inicial">
+                    <span>C</span><span>o</span><span>g</span><span>i</span><span>t</span><span
+                            class="underline-o">o</span><span class="highlight-apostrophe">’</span>
+                </a>
+                <div class="grow"></div>
+                <div class="nav-links">
+                    <a class="pill" href="/postagensacademicas">Criar Postagem</a>
+                    {% if user %}
+                    <a class="pill" href="/perfil">Perfil</a>
+                    <a class="btn btn-brand" href="/logout">Sair</a>
+                    {% else %}
+                    <a class="btn btn-brand" href="/cadastro">Cadastrar-se</a>
+                    <a class="btn btn-brand" href="/login">Login</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </header>
+
+        <main class="main-container">
+            <div class="post-feed">
+                <a href="/pagtcc" class="back-btn">← Voltar para postagens</a>
+
+                {% if post %}
+                <article class="post-card post-full">
+                    <div class="vote-section">
+                        <button class="vote-btn upvote-btn" data-post-id="{{ post.id }}" data-voto-type="1">▲</button>
+                        <div class="vote-count" id="vote-count-{{ post.id }}">{{ post.votos }}</div>
+                        <button class="vote-btn downvote-btn" data-post-id="{{ post.id }}" data-voto-type="-1">▼</button>
+                    </div>
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span class="post-author">@{{ post.autor_username }}</span>
+                            <span>•</span>
+                            <span class="post-date">{{ post.data_criacao }}</span>
+                            <span class="post-tag">{{ post.categoria }}</span>
+                        </div>
+                        <h1 class="post-title">{{ post.titulo }}</h1>
+
+                        {% if post.tags and post.tags != 'None' %}
+                        <div class="post-tags">
+                            {% for tag in post.tags.split(',') if tag.strip() %}
+                            <span class="post-tag-small">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="post-body-full">
+                            {% if post.conteudo %}
+                            {{ post.conteudo|replace('\n', '<br>')|safe }}
+                            {% else %}
+                            <p>Sem conteúdo disponível.</p>
+                            {% endif %}
+                        </div>
+
+                        {% if post.arquivo and post.arquivo != 'None' and post.arquivo != '' %}
+                        <div class="download-section">
+                            <a href="/static/uploads/{{ post.arquivo }}" class="download-btn" target="_blank" download>
+                                📎 Download do Arquivo
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        <div class="post-actions">
+                            <button class="action-btn comment-toggle">
+                                <span>💬</span>
+                                <span>Comentários</span>
+                                <span class="comment-count">({{ comentarios|length }})</span>
+                            </button>
+                            <button class="action-btn">
+                                <span>↗</span>
+                                <span>Compartilhar</span>
+                            </button>
+                            <button class="action-btn">
+                                <span>📌</span>
+                                <span>Salvar</span>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Seção de Comentários -->
+                <section class="comments-section">
+                    <h3>Comentários ({{ comentarios|length }})</h3>
+                    
+                    {% if user %}
+                    <div class="comment-form">
+                        <textarea id="comment-text" placeholder="Adicione um comentário..." rows="3"></textarea>
+                        <button id="submit-comment" class="btn btn-brand" data-post-id="{{ post.id }}">Comentar</button>
+                    </div>
+                    {% else %}
+                    <div class="login-prompt">
+                        <p><a href="/login">Faça login</a> para adicionar um comentário.</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="comments-list">
+                        {% if comentarios %}
+                            {% for comentario in comentarios %}
+                            <div class="comment-card">
+                                <div class="comment-header">
+                                    <span class="comment-author">@{{ comentario.username }}</span>
+                                    <span class="comment-date">{{ comentario.data_criacao }}</span>
+                                </div>
+                                <div class="comment-body">
+                                    {{ comentario.texto }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="no-comments">
+                                <p>Nenhum comentário ainda. Seja o primeiro a comentar!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+                {% else %}
+                <div class="no-posts">
+                    <h2>Postagem não encontrada</h2>
+                    <p>A postagem que você está tentando visualizar não existe ou foi removida.</p>
+                    <a href="/pagtcc" class="btn btn-brand">Voltar para as postagens</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <aside class="sidebar">
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">Comunidades</h3>
+                    <div class="community-list">
+                        <a href="/pagtcc?categoria=TCC" class="community-item">
+                            <div class="community-icon">T</div>
+                            <div class="community-name">Trabalhos de Conclusão</div>
+                        </a>
+                        <a href="/pagtcc?categoria=IC" class="community-item">
+                            <div class="community-icon">I</div>
+                            <div class="community-name">Iniciação Científica</div>
+                        </a>
+                        <a href="/pagtcc?categoria=Mestrado" class="community-item">
+                            <div class="community-icon">M</div>
+                            <div class="community-name">Mestrado</div>
+                        </a>
+                        <a href="/pagtcc?categoria=Doutorado" class="community-item">
+                            <div class="community-icon">D</div>
+                            <div class="community-name">Doutorado</div>
+                        </a>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script>
+        // Sistema de votação
+        document.querySelectorAll('.vote-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                const tipoVoto = parseInt(this.getAttribute('data-voto-type'));
+                const voteSection = this.closest('.vote-section');
+                const voteCountElement = voteSection.querySelector('.vote-count');
+                
+                // Feedback visual imediato
+                this.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            
+                // Salvar estado anterior para possível rollback
+                const previousVotes = parseInt(voteCountElement.textContent);
+                
+                // Atualizar UI otimisticamente
+                const newVoteCount = previousVotes + tipoVoto;
+                voteCountElement.textContent = newVoteCount;
+                
+                // Enviar para o servidor
+                fetch('/atualizar_votos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        post_id: postId,
+                        tipo_voto: tipoVoto
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na resposta do servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Atualizar com dados confirmados do servidor
+                        voteCountElement.textContent = data.novo_votos;
+                    } else {
+                        throw new Error(data.message || 'Erro desconhecido');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    // Rollback em caso de erro
+                    voteCountElement.textContent = previousVotes;
+                    showError('Erro ao atualizar votos: ' + error.message);
+                });
+            });
+        });
+
+        // Sistema de comentários
+        document.getElementById('submit-comment')?.addEventListener('click', function() {
+            const postId = this.getAttribute('data-post-id');
+            const commentText = document.getElementById('comment-text').value.trim();
+            
+            if (!commentText) {
+                showError('Por favor, digite um comentário.');
+                return;
+            }
+            
+            fetch('/adicionar_comentario', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    post_id: postId,
+                    texto: commentText
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Recarregar a página para mostrar o novo comentário
+                    location.reload();
+                } else {
+                    showError('Erro ao adicionar comentário: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showError('Erro ao adicionar comentário.');
+            });
+        });
+
+        // Permitir enviar comentário com Enter (Ctrl+Enter para nova linha)
+        document.getElementById('comment-text')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.ctrlKey && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('submit-comment').click();
+            }
+        });
+
+        function showError(message) {
+            // Criar mensagem de erro temporária
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'flash-message flash-error';
+            errorDiv.textContent = message;
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px;
+                border-radius: 5px;
+                z-index: 1000;
+                max-width: 300px;
+            `;
+            
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.style.transition = 'opacity 0.3s ease';
+                errorDiv.style.opacity = '0';
+                setTimeout(() => errorDiv.remove(), 300);
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

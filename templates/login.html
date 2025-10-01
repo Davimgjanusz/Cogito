@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cogito</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/styleLogin.css') }}">
+</head>
+
+<body>
+    <section class="hero">
+        <div class="card login" id="acesso" aria-labelledby="titulo-login">
+            <h2 id="titulo-login">Entre na sua conta</h2>
+
+
+
+            <p>Acesse com seu e‑mail institucional ou usuário da escola.</p>
+            <form class="form" action="{{ url_for('login') }}" method="post" aria-label="Formulário de login">
+                <label class="label" for="user">E‑mail ou usuário</label>
+                <input class="input" id="user" name="user" type="text" autocomplete="username"
+                    placeholder="nome@escola.edu.br" required>
+                <label class="label" for="pass">Senha</label>
+                <input class="input" id="pass" name="pass" type="password" autocomplete="current-password"
+                    placeholder="••••••••" required>
+                <div class="form-actions">
+                    <a class="link" href="#">Esqueci minha senha</a>
+                    <button class="btn btn-brand" type="submit">Entrar</button>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a class="link" href="{{ url_for('cadastro') }}">Não tem uma conta? Cadastre-se!</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+
+</html>

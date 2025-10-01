@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Cogito</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/styleLogin.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Peta:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="csd.css">
+</head>
+
+<body>
+    <div class="site-wrap">
+        <div class="brand">
+            <div class="card login" id="cadastro" aria-labelledby="titulo-cadastro">
+                <nav class="nav" aria-label="Principal">
+                    <a href="/" class="logo" aria-label="Página inicial">
+                        <span>C</span><span>o</span><span>g</span><span>i</span><span>t</span><span
+                            class="underline-o">o</span><span class="highlight-apostrophe">’</span>
+                    </a>
+                </nav>
+
+                <h2 id="titulo-cadastro" style="font-family: 'Lexend Peta', sans-serif;">Criar uma conta</h2>
+
+                <p>Preencha os dados abaixo para se cadastrar em nossa plataforma.</p>
+                <form class="form" action="{{ url_for('cadastro') }}" method="post" aria-label="Formulário de cadastro">
+
+                    <!-- Nome Completo -->
+                    <label class="label" for="nome-completo">Nome completo</label>
+                    <input class="input" id="nome-completo" name="nome_completo" type="text" autocomplete="name"
+                        placeholder="Seu nome completo" required>
+
+                    <!-- Nome de usuário -->
+                    <label class="label" for="username">Nome de usuário</label>
+                    <input class="input" id="username" name="username" type="text" autocomplete="username"
+                        placeholder="seu.usuario" required>
+
+                    <!-- Data de nascimento -->
+                    <label class="label" for="data-nascimento">Data de nascimento</label>
+                    <input class="input" id="data-nascimento" name="data_nascimento" type="date" required>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label class="label" for="email">E-mail</label>
+                            <input class="input" id="email" name="email" type="email" autocomplete="email"
+                                placeholder="nome@exemplo.com" required>
+                        </div>
+                        <div>
+                            <label class="label" for="confirm-email">Confirmar e-mail</label>
+                            <input class="input" id="confirm-email" name="confirm-email" type="email" autocomplete="email"
+                                placeholder="nome@exemplo.com" required>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label class="label" for="password">Senha</label>
+                            <input class="input" id="password" name="password" type="password" autocomplete="new-password"
+                                placeholder="••••••••" required>
+                        </div>
+                        <div>
+                            <label class="label" for="confirm-password">Confirmar senha</label>
+                            <input class="input" id="confirm-password" name="confirm-password" type="password"
+                                autocomplete="new-password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <label class="label" for="escolaridade">Nível de escolaridade</label>
+                    <select class="input" id="escolaridade" name="escolaridade" required
+                        style="appearance: none; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%239fb0c7%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 9l6 6 6-6%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px;">
+                        <option value="" disabled selected>Selecione sua escolaridade</option>
+                        <optgroup label="Ensino Fundamental">
+                            <option value="fundamental-incompleto">Ensino Fundamental - Incompleto</option>
+                            <option value="fundamental-completo">Ensino Fundamental - Completo</option>
+                        </optgroup>
+                        <optgroup label="Ensino Médio">
+                            <option value="medio-incompleto">Ensino Médio - Incompleto</option>
+                            <option value="medio-completo">Ensino Médio - Completo</option>
+                        </optgroup>
+                        <optgroup label="Ensino Técnico">
+                            <option value="tecnico-incompleto">Ensino Técnico - Incompleto</option>
+                            <option value="tecnico-completo">Ensino Técnico - Completo</option>
+                        </optgroup>
+                        <optgroup label="Ensino Superior">
+                            <option value="superior-incompleto">Ensino Superior - Incompleto</option>
+                            <option value="superior-completo">Ensino Superior - Completo</option>
+                        </optgroup>
+                        <optgroup label="Pós-graduação (lato sensu)">
+                            <option value="pos-lato-incompleto">Pós-graduação (lato sensu) - Incompleto</option>
+                            <option value="pos-lato-completo">Pós-graduação (lato sensu) - Completo</option>
+                        </optgroup>
+                        <optgroup label="Pós-graduação (stricto sensu)">
+                            <option value="pos-stricto-incompleto">Pós-graduação (stricto sensu) - Incompleto</option>
+                            <option value="pos-stricto-completo">Pós-graduação (stricto sensu) - Completo</option>
+                        </optgroup>
+                    </select>
+
+                    <div style="display: flex; align-items: flex-start; gap: 10px; margin: 12px 0;">
+                        <input type="checkbox" id="terms" name="terms" required style="margin-top: 3px;">
+                        <label for="terms" style="font-size: 13px; color: var(--muted);">Concordo com os <a href="#"
+                                style="color: var(--brand); text-decoration: underline;">Termos de Uso</a> e <a href="#"
+                                style="color: var(--brand); text-decoration: underline;">Política de Privacidade</a></label>
+                    </div>
+
+                    <div class="form-actions">
+                        <a class="link" href="{{ url_for('login') }}">Já tem uma conta? Faça login</a>
+                        <button class="btn btn-brand" type="submit">Cadastrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

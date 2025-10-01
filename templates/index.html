@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Cogito</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/styleIndex.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Peta:wght@400;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="site-wrap">
+        <header>
+            <nav class="nav" aria-label="Principal">
+                <a href="/" class="logo" aria-label="Página inicial">
+                    <span>C</span><span>o</span><span>g</span><span>i</span><span>t</span><span
+                            class="underline-o">o</span><span class="highlight-apostrophe">’</span>
+                </a>
+
+                <div class="grow"></div>
+                <div class="nav-links">
+                    <a class="pill" href="/postagensacademicas">Postar seu Projeto</a>
+                    <a class="pill" href="/pagtcc">Postagens</a>
+                    {% if user %}
+                    <a class="pill" href="/perfil">Perfil</a>
+                    <a class="btn btn-brand" href="/logout">Sair</a>
+                    {% else %}
+                    <a class="btn btn-brand" href="/cadastro">Cadastrar-se</a>
+                    <a class="btn btn-brand" href="/login">Login</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <main>
+            <section class="hero">
+                <div>
+                    <h1>{% if user %}Bem-vindo(a), {{ user.username }}!{% else %}Cogito: Onde ideias acadêmicas ganham vida{% endif %}</h1>
+                    <p>{% if user %}Explore nossa plataforma acadêmica e descubra recursos para impulsionar seus estudos e pesquisas.{% else %}A Cogito é uma plataforma dedicada a conectar pesquisadores, estudantes e acadêmicos para compartilhar, debater e aprimorar projetos acadêmicos como TCCs, dissertações de mestrado, teses de doutorado e muito mais.{% endif %}</p>
+                    <div class="hero-cta">
+                        {% if user %}
+                        <a class="btn btn-brand" href="/postagensacademicas">Postar</a>
+                        <a class="btn btn-ghost" href="/pagtcc">Acessar Postagens</a>
+                        {% else %}
+                        <a class="btn btn-brand" href="#acesso">Acessar plataforma</a>
+                        <a class="btn btn-ghost" href="#recursos">Explorar recursos</a>
+                        {% endif %}
+                    </div>
+
+                    <div class="statbar" role="list">
+                        <div class="stat" role="listitem"><b>📚</b><span>Ambiente acadêmico</span></div>
+                        <div class="stat" role="listitem"><b>🔍</b><span>Pesquisa colaborativa</span></div>
+                        <div class="stat" role="listitem"><b>💡</b><span>Ideias acadêmicas</span></div>
+                    </div>
+                </div>
+
+                {% if not user %}
+                <div class="card login" id="acesso" aria-labelledby="titulo-login">
+                    <h2 id="titulo-login">Entre na sua conta</h2>
+                    <p>Acesse com seu e-mail institucional ou usuário da plataforma.</p>
+                    <form class="form" action="{{ url_for('login') }}" method="post" aria-label="Formulário de login">
+                        <label class="label" for="user">E-mail ou usuário</label>
+                        <input class="input" id="user" name="user" type="text" autocomplete="username"
+                            placeholder="nome@universidade.edu.br" required>
+                        <label class="label" for="pass">Senha</label>
+                        <input class="input" id="pass" name="pass" type="password" autocomplete="current-password"
+                            placeholder="••••••••" required>
+                        <div class="form-actions">
+                            <a class="link" href="#">Esqueci minha senha</a>
+                            <button class="btn btn-brand" type="submit">Entrar</button>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <a class="link" href="{{ url_for('cadastro') }}">Não tem uma conta? Cadastre-se!</a>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <div class="card login" id="acesso" aria-labelledby="titulo-perfil">
+                    <h2 id="titulo-perfil">Seu Perfil</h2>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 60px;">{{ user.avatar }}</div>
+                        <h3>{{ user.username }}</h3>
+                        <p>{{ user.email }}</p>
+                        <p>{{ user.escolaridade }}</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <a class="btn btn-brand" href="/perfil">Ver Perfil Completo</a>
+                    </div>
+                </div>
+                {% endif %}
+            </section>
+
+           <!-- Recursos Acadêmicos -->
+<section id="recursos">
+    <div class="container">
+        <h2 style="text-align: center; margin-bottom: 30px;">Recursos Acadêmicos</h2>
+        <div class="grid-3">
+            <article class="card" style="display: flex; flex-direction: column; height: 100%;">
+                <div style="flex: 1;">
+                    <h3>📚 Postagens Acadêmicas</h3>
+                    <p>Compartilhe e explore artigos, pesquisas em andamento e materiais acadêmicos diversos. Participe de debates construtivos com outros pesquisadores.</p>
+                </div>
+                <div style="margin-top: auto; padding-top: 20px;">
+                    <a href="/postagensacademicas" class="btn btn-brand" style="width: 100%;">Acessar</a>
+                </div>
+            </article>
+            <article class="card" style="display: flex; flex-direction: column; height: 100%;">
+                <div style="flex: 1;">
+                    <h3>📝 Trabalhos de Conclusão</h3>
+                    <p>Encontre inspiração em TCCs, monografias e projetos de pesquisa concluídos. Compartilhe seu trabalho e receba feedback da comunidade acadêmica.</p>
+                </div>
+                <div style="margin-top: auto; padding-top: 20px;">
+                    <a href="/pagtcc" class="btn btn-brand" style="width: 100%;">Acessar</a>
+                </div>
+            </article>
+            <article class="card" style="display: flex; flex-direction: column; height: 100%;">
+                <div style="flex: 1;">
+                    <h3>👤 {% if user %}Seu Perfil{% else %}Perfil Acadêmico{% endif %}</h3>
+                    <p>{% if user %}Gerencie suas informações, histórico acadêmico e conecte-se com outros pesquisadores de sua área de interesse.{% else %}Crie seu perfil acadêmico para compartilhar suas pesquisas, conectar-se com colegas e acompanhar projetos relevantes.{% endif %}</p>
+                </div>
+                <div style="margin-top: auto; padding-top: 20px;">
+                    <a href="{% if user %}/perfil{% else %}/cadastro{% endif %}" class="btn btn-brand" style="width: 100%;">{% if user %}Acessar{% else %}Criar{% endif %}</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+            <!-- Mestrado -->
+            <section id="mestrado">
+                <div class="container grid-2" style="align-items:center">
+                    <div>
+                        <h2>Desenvolva sua pesquisa no seu ritmo</h2>
+                        <p class="muted">A Cogito oferece ferramentas para organizar seu processo de pesquisa, desde a concepção da ideia até a finalização do projeto.</p>
+                        <ul>
+                            <li>Espaço para compartilhar e receber feedback sobre sua pesquisa</li>
+                            <li>Comunidade ativa para debates acadêmicos</li>
+                            <li>Recursos para organização e acompanhamento de projetos</li>
+                        </ul>
+                    </div>
+                    <div class="illus">
+                        <div class="blob a"></div>
+                        <div class="blob b"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IC's -->
+            <section id="ics">
+                <div class="container">
+                    <div class="card" style="display:grid; grid-template-columns: 1.2fr 1fr; gap:18px; align-items:center">
+                        <div>
+                            <h2>Iniciação Científica e Projetos Acadêmicos</h2>
+                            <p>A Cogito é o ambiente ideal para estudantes de iniciação científica compartilharem seus projetos em desenvolvimento, trocarem experiências e encontrarem orientações valiosas.</p>
+                            <div style="display:flex; gap:12px; margin-top:10px">
+                                <a class="btn btn-brand" href="/pagtcc">Posts Acadêmicos</a>
+                                
+                            </div>
+                        </div>
+                        <div class="illus">
+                            <div class="blob a" style="left:auto; right:-30px; top:-10px"></div>
+                            <div class="blob b" style="left:-40px; bottom:-20px"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contato">
+                <div class="container">
+                    <div class="card" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: center; padding: 50px;">
+                        <div>
+                            <h2 style="margin-bottom: 20px; color: var(--text-primary); font-size: 2.2em;">Fale Conosco</h2>
+                            <p style="margin-bottom: 25px; font-size: 1.1em; line-height: 1.6; color: var(--text-secondary);">
+                                Tem dúvidas sobre a plataforma ou sugestões para melhorias? 
+                                Nossa equipe está aqui para ajudar você a aproveitar ao máximo 
+                                os recursos acadêmicos da Cogito.
+                            </p>
+                            
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding: 15px; background: var(--bg-secondary); border-radius: 10px;">
+                                <div style="font-size: 24px;">📧</div>
+                                <div>
+                                    <strong style="display: block; color: var(--text-primary);">Email Institucional</strong>
+                                    <span style="color: var(--text-secondary);">cogitofecart@gmail.com</span>
+                                </div>
+                            </div>
+            
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px; padding: 15px; background: var(--bg-secondary); border-radius: 10px;">
+                                <div style="font-size: 24px;">💬</div>
+                                <div>
+                                    <strong style="display: block; color: var(--text-primary);">Suporte Acadêmico</strong>
+                                    <span style="color: var(--text-secondary);">@cogito_info</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="illus" style="display: flex; justify-content: center; align-items: center;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 100px; margin-bottom: 20px;">📞</div>
+                                <h4 style="color: var(--text-primary); margin-bottom: 15px;">Suporte Rápido</h4>
+                                <p style="color: var(--text-secondary); line-height: 1.5;">
+                                    Nossa equipe responde em até <strong>24 horas</strong><br>
+                                    durante dias úteis
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+    </main>
+
+    <footer>
+        <div class="foot">
+            <div>
+                <a href="/" class="logo" aria-label="Página inicial">
+                    <span>C</span><span>o</span><span>g</span><span>i</span><span>t</span><span class="underline-o">o</span><span class="highlight-apostrophe">'</span>
+                </a>
+                <br>
+                <small>© <span id="year"></span> Cogito. Todos os direitos reservados.</small>
+            </div>
+                <div>
+                    <h4>Produto</h4>
+                    <a href="/postagensacademicas">Postagens Acadêmicas</a>
+                    <a href="/pagtcc">TCC's</a>
+                    <a href="/perfil">Perfil</a>
+                </div>
+                <div>
+                    <h4>Institucional</h4>
+                    <a href="#">Sobre a Cogito</a>
+                    <a href="#">Nossa Missão</a>
+                    <a href="#">Privacidade</a>
+                </div>
+                <div>
+                    <h4>Suporte</h4>
+                    <a href="#">Central de Ajuda</a>
+                    <a href="#">Status da Plataforma</a>
+                    <a href="#">Contato</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        // Atualiza ano no rodapé
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

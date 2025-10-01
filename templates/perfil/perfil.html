@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil | Cogito</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Peta:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/styleEditarPerfil.css') }}">
+    <link rel="stylesheet" href="/static/style/perfil/stylePerfil.css">
+</head>
+
+<body>
+    <div class="site-wrap">
+        <header>
+            <nav class="nav" aria-label="Principal">
+                <a href="/" class="logo" aria-label="Página inicial">
+                    <span>C</span><span>o</span><span>g</span><span>i</span><span>t</span><span
+                        class="underline-o">o</span><span class="highlight-apostrophe">'</span>
+                </a>
+                <div class="grow"></div>
+                <div class="nav-links">
+                    <a class="pill" href="/pagtcc">Posts Acadêmicos</a>
+                    <a class="btn btn-brand" href="/perfil">Perfil</a>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container">
+            <!-- Elemento oculto para passar dados para JavaScript -->
+            {% if user %}
+            <div id="user-data" data-username="{{ user.username }}" style="display: none;"></div>
+            {% endif %}
+
+            <div class="profile-header">
+                <div class="banner"></div>
+                <div class="profile-pic-container">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <h1 class="profile-name">{% if user %}{{ user.username }}{% else %}Usuário{% endif %}</h1>
+                    <p class="profile-headline">{% if user %}{{ user.profissao }}{% else %}Complete o perfil{% endif %}
+                    </p>
+                    <p class="profile-location"><i class="fas fa-map-marker-alt"></i>
+                        {% if user and user.endereco %}{{ user.endereco }}{% else %}Endereço não informado{% endif %}
+                    </p>
+                    <!-- Na seção de contato, atualize o ícone e a exibição: -->
+                    <p class="profile-contact"><i class="fas fa-phone"></i>
+                        {% if user and user.contato %}
+                        {{ user.contato }}
+                        {% else %}
+                        Telefone não informado
+                        {% endif %}
+                    </p>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Mensagem</button>
+                        <button class="btn btn-outline">Mais</button>
+                        <button class="btn btn-outline" onclick="window.location.href='/EditarPerfil'">
+                            <i class="fas fa-pencil-alt"></i> Editar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Interesses</h2>
+                <ul class="interests-list">
+                    <li class="interest-item">Adicional reção do perfil</li>
+                    <li class="interest-item">Usais</li>
+                    <li class="interest-item">Marketing Digital</li>
+                    <li class="interest-item">Gestão de Processos</li>
+                    <li class="interest-item">Desenvolvimento Pessoal</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Descrição</h2>
+                <ul class="description-list">
+                    <li class="description-item">
+                        <i class="fas fa-check-circle"></i>
+                        {% if user and user.descricao %}{{ user.descricao }}{% else %}Escreva sua descrição{% endif %}
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Informações Pessoais</h2>
+                <ul class="description-list">
+                    <li class="description-item">
+                        <i class="fas fa-user"></i>
+                        <strong>Nome completo:</strong>
+                        {% if user and user.nome_completo %}{{ user.nome_completo }}{% else %}Não informado{% endif %}
+                    </li>
+                    <li class="description-item">
+                        <i class="fas fa-birthday-cake"></i>
+                        <strong>Data de nascimento:</strong>
+                        {% if user and user.data_nascimento %}{{ user.data_nascimento }}{% else %}Não informada{% endif
+                        %}
+                    </li>
+                    <li class="description-item">
+                        <i class="fas fa-graduation-cap"></i>
+                        <strong>Escolaridade:</strong>
+                        {% if user and user.escolaridade %}{{ user.escolaridade }}{% else %}Não informada{% endif %}
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Sugestões para você</h2>
+                <ul class="suggestions-list">
+                    <li class="suggestion-item"><i class="fas fa-lightbulb"></i> Faça um post acadêmico</li>
+                    <li class="suggestion-item"><i class="fas fa-users"></i> Conecte-se com outros profissionais</li>
+                    <li class="suggestion-item"><i class="fas fa-book"></i> Complete suas informações de formação</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Formação acadêmica</h2>
+                <div class="education-item">
+                    <div class="education-title">
+                        {% if user and user.formacao %}{{ user.formacao }}{% else %}Onde se formou{% endif %}
+                    </div>
+                    <p class="education-details">
+                        {% if user and user.formacao %}
+                        Formação acadêmica informada
+                        {% else %}
+                        Perfis com formação acadêmica são até 2,5 vezes mais visualizados.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Experiência profissional</h2>
+                <div class="education-item">
+                    <div class="education-title">
+                        {% if user and user.experiencia %}{{ user.experiencia }}{% else %}Emprego{% endif %}
+                    </div>
+                    <p class="education-details">
+                        {% if user and user.experiencia %}
+                        Experiência profissional informada
+                        {% else %}
+                        Adicione suas experiências profissionais para aumentar sua visibilidade.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="profile-footer">
+                Cogito © 2025 - Página de perfil
+            </div>
+        </div>
+
+        <script>
+            // Adicionando um efeito sutil de carregamento
+            document.addEventListener('DOMContentLoaded', function () {
+                document.body.classList.add('loaded');
+
+                // Adicionando interatividade aos botões
+                const buttons = document.querySelectorAll('.btn');
+                buttons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        this.style.transform = 'scale(0.98)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 150);
+                    });
+                });
+
+                // Adicionar mensagem de boas-vindas se o usuário estiver logado
+                const userData = document.getElementById('user-data');
+                if (userData) {
+                    const username = userData.getAttribute('data-username');
+                    console.log('Bem-vindo, ' + username + '!');
+                } else {
+                    console.log('Página de perfil carregada. Faça login para personalizar.');
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>

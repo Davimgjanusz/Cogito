@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postar Trabalho Acadêmico | Cogito</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/StylePostagensAcademicas.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Peta:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div href="/" class="logo">
+                <span>C</span><span>o</span><span>g</span><span>i</span><span>t</span><span
+                            class="underline-o">o</span><span class="highlight-apostrophe">’</span>
+            </div>
+            <a href="/pagtcc" class="back-btn">Voltar</a>
+        </div>
+
+        <h1>Postar Trabalho Acadêmico</h1>
+
+        <div class="post-type-selector">
+            <button class="type-btn active">Texto</button>
+            <button class="type-btn">Multimídia</button>
+            <button class="type-btn">Link</button>
+            <button class="type-btn">Enquete</button>
+        </div>
+
+        <form id="post-form" action="{{ url_for('criar_post_route') }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="community">Selecione uma comunidade <span class="community-badge">Obrigatório</span></label>
+                <select id="community" name="categoria" required>
+                    <option value="">Selecione uma comunidade...</option>
+                    <option value="TCC">Trabalhos de Conclusão (TCC)</option>
+                    <option value="IC">Iniciação Científica</option>
+                    <option value="Mestrado">Mestrado</option>
+                    <option value="Doutorado">Doutorado</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Título <span class="community-badge">Obrigatório</span></label>
+                <input type="text" id="title" name="titulo" placeholder="Adicione um título claro e descritivo" required>
+            </div>
+
+            <div class="form-group">
+                <label for="content">Conteúdo</label>
+                <div class="formatting-toolbar">
+                    <button type="button" class="format-btn" title="Negrito">B</button>
+                    <button type="button" class="format-btn" title="Itálico">I</button>
+                    <button type="button" class="format-btn" title="Sublinhado">S</button>
+                    <button type="button" class="format-btn" title="Tachado">X²</button>
+                    <button type="button" class="format-btn" title="Citação">"</button>
+                </div>
+                <textarea id="content" name="conteudo" placeholder="Descreva seu trabalho acadêmico (opcional)"></textarea>
+                <div class="char-count">0/300</div>
+            </div>
+
+            <div class="form-group">
+                <label>Arquivo do trabalho <span class="community-badge">PDF ou Word</span></label>
+                <div class="file-upload" id="upload-area">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Arraste aqui ou clique para enviar</p>
+                    <small>PDF ou DOCX (até 10MB)</small>
+                    <div id="file-name"></div>
+                    <input type="file" id="file-input" name="arquivo" accept=".pdf,.doc,.docx">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="tag-input">Adicionar tags</label>
+                <input type="text" id="tag-input" placeholder="Digite uma tag e pressione Enter">
+                <input type="hidden" id="tags-hidden" name="tags">
+                <div class="tag-editor" id="tag-container"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-outline">Salvar rascunho</button>
+                <button type="submit" class="btn btn-primary">Postar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const contentTextarea = document.getElementById('content');
+            const charCount = document.querySelector('.char-count');
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const fileName = document.getElementById('file-name');
+            const tagInput = document.getElementById('tag-input');
+            const tagContainer = document.getElementById('tag-container');
+            const tagsHidden = document.getElementById('tags-hidden');
+            const postForm = document.getElementById('post-form');
+            let tagsArray = [];
+            
+            // Contador de caracteres
+            contentTextarea.addEventListener('input', function() {
+                const length = this.value.length;
+                charCount.textContent = `${length}/300`;
+                
+                if (length > 300) {
+                    charCount.style.color = 'var(--danger)';
+                } else {
+                    charCount.style.color = 'var(--muted)';
+                }
+            });
+            
+            // Upload de arquivo
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--brand)';
+                this.style.backgroundColor = 'rgba(168, 138, 19, 0.05)';
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                this.style.borderColor = 'rgba(0, 0, 0, 0.2)';
+                this.style.backgroundColor = 'transparent';
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'rgba(0, 0, 0, 0.2)';
+                this.style.backgroundColor = 'transparent';
+                
+                if (e.dataTransfer.files.length) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (this.files.length) {
+                    handleFile(this.files[0]);
+                }
+            });
+            
+            function handleFile(file) {
+                const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                
+                if (!validTypes.includes(file.type)) {
+                    alert('Por favor, selecione um arquivo PDF ou Word.');
+                    return;
+                }
+                
+                if (file.size > maxSize) {
+                    alert('O arquivo deve ter no máximo 10MB.');
+                    return;
+                }
+                
+                fileName.textContent = file.name;
+            }
+            
+            // Sistema de tags
+            tagInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addTag(this.value.trim());
+                    this.value = '';
+                }
+            });
+            
+            function addTag(text) {
+                if (!text) return;
+                
+                if (!tagsArray.includes(text)) {
+                    tagsArray.push(text);
+                    updateTagsHidden();
+                    
+                    const tag = document.createElement('div');
+                    tag.className = 'tag';
+                    tag.innerHTML = `${text} <span class="tag-remove">&times;</span>`;
+                    
+                    tag.querySelector('.tag-remove').addEventListener('click', function() {
+                        tagsArray = tagsArray.filter(t => t !== text);
+                        tag.remove();
+                        updateTagsHidden();
+                    });
+                    
+                    tagContainer.appendChild(tag);
+                }
+            }
+            
+            function updateTagsHidden() {
+                tagsHidden.value = tagsArray.join(',');
+            }
+            
+            // Envio do formulário
+            postForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validações básicas
+                const community = document.getElementById('community').value;
+                const title = document.getElementById('title').value;
+                
+                if (!community) {
+                    alert('Por favor, selecione uma comunidade.');
+                    return;
+                }
+                
+                if (!title) {
+                    alert('Por favor, adicione um título.');
+                    return;
+                }
+                
+                // Enviar formulário
+                this.submit();
+            });
+            
+            // Botões de tipo de postagem
+            const typeButtons = document.querySelectorAll('.type-btn');
+            typeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    typeButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+
+    <!-- Font Awesome para ícones -->   
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

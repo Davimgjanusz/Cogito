@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil | Cogito</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/styleEditarPerfil.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Peta:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style/perfil/styleEditarPerfil.css">
+</head>
+
+<body>
+    <div class="site-wrap">
+        <header>
+            <nav class="nav" aria-label="Principal">
+                <a href="/" class="logo" aria-label="Página inicial">
+                    <span>C</span><span>o</span><span>g</span><span>i</span><span>t</span><span
+                        class="underline-o">o</span><span class="highlight-apostrophe">'</span>
+                </a>
+                <div class="grow"></div>
+                <div class="nav-links">
+                    <a class="pill" href="/pagtcc">Posts Acadêmicos</a>
+                    <a class="btn btn-brand" href="/perfil">Perfil</a>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container">
+            <form method="POST" action="/EditarPerfil" onsubmit="formatarTelefoneAntesEnviar()">
+                <div class="profile-header">
+                    <div class="banner"></div>
+                    <div class="profile-pic-container">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-info">
+                        <input type="text" name="username" id="username" placeholder="Nome de usuário"
+                            value="{% if user %}{{ user.username }}{% endif %}" required>
+                        <input type="text" name="profissao" id="profissao" placeholder="Sua profissão"
+                            value="{% if user %}{{ user.profissao }}{% endif %}" required>
+                        <p class="profile-location"><i class="fas fa-map-marker-alt"></i>
+                            <input type="text" name="endereco" id="endereco" placeholder="Seu endereço"
+                                value="{% if user %}{{ user.endereco }}{% endif %}">
+                        </p>
+                        <p class="profile-contact"><i class="fas fa-phone"></i>
+                            <input type="tel" name="contato" id="contato" placeholder="(11) 99999-9999"
+                                pattern="\([0-9]{2}\) [0-9]{4,5}-[0-9]{4}"
+                                title="Formato: (11) 99999-9999 ou (11) 9999-9999"
+                                value="{% if user %}{{ user.contato }}{% endif %}">
+                        </p>
+
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Mensagem</button>
+                            <button type="button" class="btn btn-outline">Mais</button>
+                            <button type="submit" class="btn btn-outline"><i class="fas fa-save"></i> Salvar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Descrição</h2>
+                    <ul class="description-list">
+                        <li class="description-item">
+                            <textarea name="descricao" id="descricao"
+                                placeholder="Escreva sua descrição">{% if user %}{{ user.descricao }}{% endif %}</textarea>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Formação acadêmica</h2>
+                    <div class="education-item">
+                        <input type="text" name="formacao" id="formacao" placeholder="Sua formação acadêmica"
+                            value="{% if user %}{{ user.formacao }}{% endif %}">
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Experiência profissional</h2>
+                    <div class="education-item">
+                        <input type="text" name="experiencia" id="experiencia"
+                            placeholder="Sua experiência profissional"
+                            value="{% if user %}{{ user.experiencia }}{% endif %}">
+                    </div>
+                </div>
+
+                <!-- Campos adicionais -->
+                <div class="section">
+                    <h2 class="section-title">Informações pessoais</h2>
+                    <div class="education-item">
+                        <input type="text" name="nome_completo" id="nome_completo" placeholder="Nome completo"
+                            value="{% if user %}{{ user.nome_completo }}{% endif %}">
+                        <input type="date" name="data_nascimento" id="data_nascimento"
+                            value="{% if user %}{{ user.data_nascimento }}{% endif %}">
+                        <input type="text" name="escolaridade" id="escolaridade" placeholder="Escolaridade"
+                            value="{% if user %}{{ user.escolaridade }}{% endif %}">
+                    </div>
+                </div>
+            </form>
+
+            <div class="profile-footer">
+                Cogito © 2025 - Página de edição de perfil
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Máscara para telefone
+        function mascaraTelefone(telefone) {
+            const texto = telefone.value.replace(/\D/g, '');
+            const textoArr = texto.split('');
+
+            let textoFormatado = '';
+
+            if (textoArr.length > 0) {
+                textoFormatado += `(${textoArr.slice(0, 2).join('')}`;
+            }
+            if (textoArr.length > 2) {
+                textoFormatado += `) ${textoArr.slice(2, 7).join('')}`;
+            }
+            if (textoArr.length > 7) {
+                textoFormatado += `-${textoArr.slice(7, 11).join('')}`;
+            }
+
+            telefone.value = textoFormatado;
+        }
+
+        // Formatar telefone antes de enviar o formulário
+        function formatarTelefoneAntesEnviar() {
+            const campoTelefone = document.getElementById('contato');
+            if (campoTelefone.value) {
+                // Remove qualquer formatação existente e aplica a máscara novamente
+                campoTelefone.value = campoTelefone.value.replace(/\D/g, '');
+                if (campoTelefone.value.length === 11) {
+                    campoTelefone.value = campoTelefone.value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                } else if (campoTelefone.value.length === 10) {
+                    campoTelefone.value = campoTelefone.value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.classList.add('loaded');
+
+            // Aplicar máscara ao campo de telefone
+            const campoTelefone = document.getElementById('contato');
+            if (campoTelefone) {
+                campoTelefone.addEventListener('input', function () {
+                    mascaraTelefone(this);
+                });
+
+                // Formatar telefone existente ao carregar a página
+                if (campoTelefone.value) {
+                    mascaraTelefone(campoTelefone);
+                }
+            }
+
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function () {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // Validação do telefone antes de enviar
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    const telefone = document.getElementById('contato').value;
+                    const telefoneLimpo = telefone.replace(/\D/g, '');
+
+                    if (telefone && (telefoneLimpo.length !== 10 && telefoneLimpo.length !== 11)) {
+                        e.preventDefault();
+                        alert('Por favor, insira um telefone válido (10 ou 11 dígitos).');
+                        document.getElementById('contato').focus();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

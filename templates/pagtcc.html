@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cogito - Trabalhos Acadêmicos</title>
+  <link rel="stylesheet" href="/static/style/stylePagtcc.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend+Peta:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="site-wrap">
+    <header>
+      <nav class="nav" aria-label="Principal">
+        <a href="/" class="logo" aria-label="Página inicial">
+          <span>C</span><span>o</span><span>g</span><span>i</span><span>t</span><span
+                            class="underline-o">o</span><span class="highlight-apostrophe">’</span>
+        </a>
+        <div class="grow"></div>
+        <div class="nav-links">
+          <a class="pill" href="/postagensacademicas">Criar Postagem</a>
+          {% if user %}
+          <a class="pill" href="/perfil">Perfil</a>
+          <a class="btn btn-brand" href="/logout">Sair</a>
+          {% else %}
+          <a class="btn btn-brand" href="/cadastro">Cadastrar-se</a>
+          <a class="btn btn-brand" href="/login">Login</a>
+          {% endif %}
+        </div>
+      </nav>
+    </header>
+
+    <!-- Filtros de Postagens -->
+    <div class="filters-container">
+      <h2 class="filters-title">📂 Filtrar Postagens</h2>
+      <div class="filter-buttons">
+        <a href="/pagtcc?categoria=todos" class="filter-btn {% if categoria_selecionada == 'todos' %}active{% endif %}"
+          data-category="todos">
+          <span>📁</span> Todos <span class="count">{{ contagens.todos }}</span>
+        </a>
+        <a href="/pagtcc?categoria=TCC" class="filter-btn {% if categoria_selecionada == 'TCC' %}active{% endif %}"
+          data-category="TCC">
+          <span>📄</span> TCC <span class="count">{{ contagens.TCC }}</span>
+        </a>
+        <a href="/pagtcc?categoria=IC" class="filter-btn {% if categoria_selecionada == 'IC' %}active{% endif %}"
+          data-category="IC">
+          <span>🔬</span> Iniciação Científica <span class="count">{{ contagens.IC }}</span>
+        </a>
+        <a href="/pagtcc?categoria=Mestrado"
+          class="filter-btn {% if categoria_selecionada == 'Mestrado' %}active{% endif %}" data-category="Mestrado">
+          <span>🎓</span> Mestrado <span class="count">{{ contagens.Mestrado }}</span>
+        </a>
+        <a href="/pagtcc?categoria=Doutorado"
+          class="filter-btn {% if categoria_selecionada == 'Doutorado' %}active{% endif %}" data-category="Doutorado">
+          <span>📚</span> Doutorado <span class="count">{{ contagens.Doutorado }}</span>
+        </a>
+      </div>
+
+      <!-- Opção de ordenação -->
+      <div class="sorting-options">
+        <span class="sort-label">Ordenar por:</span>
+        <a href="/pagtcc?categoria={{ categoria_selecionada }}&ordenar=data"
+          class="filter-btn {% if not ordenar_por_votos %}active{% endif %}">
+          <span>📅</span> Data
+        </a>
+        <a href="/pagtcc?categoria={{ categoria_selecionada }}&ordenar=votos"
+          class="filter-btn {% if ordenar_por_votos %}active{% endif %}">
+          <span>👍</span> Votos
+        </a>
+      </div>
+    </div>
+
+    <main class="main-container">
+      <div class="post-feed">
+        {% if posts %}
+        {% for post in posts %}
+        <article class="post-card" data-category="{{ post.categoria }}" data-post-id="{{ post.id }}">
+          <div class="vote-section">
+            <button class="vote-btn upvote-btn" data-post-id="{{ post.id }}" data-voto-type="1">▲</button>
+            <div class="vote-count" id="vote-count-{{ post.id }}">{{ post.votos }}</div>
+            <button class="vote-btn downvote-btn" data-post-id="{{ post.id }}" data-voto-type="-1">▼</button>
+          </div>
+
+          <div class="post-content-wrapper">
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="post-author">@{{ post.username }}</span>
+                <span>•</span>
+                <span class="post-date">{{ post.data_criacao }}</span>
+                <span class="post-tag">{{ post.categoria }}</span>
+              </div>
+
+              <h3 class="post-title">{{ post.titulo }}</h3>
+
+              {% if post.conteudo %}
+              <p class="post-body">{{ post.conteudo|truncate(200) }}</p>
+              {% endif %}
+
+              <!-- Tratamento de tags -->
+              {% if post.tags and post.tags != 'None' %}
+              <div class="post-tags">
+                {% for tag in post.tags.split(',') if tag.strip() %}
+                <span class="post-tag-small">{{ tag.strip() }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Ações da postagem -->
+            <!-- No arquivo pagtcc.html, encontrar a seção de ações da postagem e modificar o botão Comentar -->
+            <div class="post-actions">
+              <a href="/verpostagem?id={{ post.id }}" class="action-btn">
+                <span>💬</span>
+                <span>Comentar</span>
+              </a>
+              {% if post.arquivo and post.arquivo != 'None' and post.arquivo != '' %}
+              <a href="/static/uploads/{{ post.arquivo }}" class="action-btn" download>
+                <span>📎</span>
+                <span>Download</span>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+        {% else %}
+        <div class="no-posts">
+          <p>Nenhuma postagem encontrada.</p>
+          <a href="/postagensacademicas" class="btn btn-brand">Criar primeira postagem</a>
+        </div>
+        {% endif %}
+      </div>
+
+      <aside class="sidebar">
+        <div class="sidebar-card">
+          <h3 class="sidebar-title">Comunidades</h3>
+          <div class="community-list">
+            <a href="/pagtcc?categoria=TCC" class="community-item">
+              <div class="community-icon">T</div>
+              <div class="community-name">Trabalhos de Conclusão</div>
+            </a>
+            <a href="/pagtcc?categoria=IC" class="community-item">
+              <div class="community-icon">I</div>
+              <div class="community-name">Iniciação Científica</div>
+            </a>
+            <a href="/pagtcc?categoria=Mestrado" class="community-item">
+              <div class="community-icon">M</div>
+              <div class="community-name">Mestrado</div>
+            </a>
+            <a href="/pagtcc?categoria=Doutorado" class="community-item">
+              <div class="community-icon">D</div>
+              <div class="community-name">Doutorado</div>
+            </a>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Adicionando mensagens flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-messages">
+    {% for category, message in messages %}
+    <div class="flash-message flash-{{ category }}">
+      {{ message }}
+      <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <script>
+    // Sistema de votação SIMPLIFICADO (apenas contagem total)
+    document.addEventListener('DOMContentLoaded', function () {
+      initVotingSystem();
+      initFlashMessages();
+    });
+
+    function initVotingSystem() {
+      document.querySelectorAll('.vote-btn').forEach(button => {
+        button.addEventListener('click', handleVote);
+      });
+    }
+
+    function handleVote() {
+      const postId = this.getAttribute('data-post-id');
+      const tipoVoto = parseInt(this.getAttribute('data-voto-type'));
+      const voteSection = this.closest('.vote-section');
+      const voteCountElement = voteSection.querySelector('.vote-count');
+
+      // Feedback visual imediato
+      this.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        this.style.transform = 'scale(1)';
+      }, 200);
+
+      // Salvar estado anterior para possível rollback
+      const previousVotes = parseInt(voteCountElement.textContent);
+
+      // Atualizar UI otimisticamente
+      const newVoteCount = previousVotes + tipoVoto;
+      voteCountElement.textContent = newVoteCount;
+
+      // Enviar para o servidor
+      fetch('/atualizar_votos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          post_id: postId,
+          tipo_voto: tipoVoto
+        })
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erro na resposta do servidor');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            // Atualizar com dados confirmados do servidor
+            voteCountElement.textContent = data.novo_votos;
+          } else {
+            throw new Error(data.message || 'Erro desconhecido');
+          }
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          // Rollback em caso de erro
+          voteCountElement.textContent = previousVotes;
+          showError('Erro ao atualizar votos: ' + error.message);
+        });
+    }
+
+    function initFlashMessages() {
+      // Fechar mensagens flash automaticamente
+      setTimeout(() => {
+        const flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(message => {
+          message.style.transition = 'opacity 0.3s ease';
+          message.style.opacity = '0';
+          setTimeout(() => message.remove(), 300);
+        });
+      }, 5000);
+
+      // Adicionar botão de fechar manual
+      document.querySelectorAll('.flash-message').forEach(message => {
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '&times;';
+        closeBtn.style.cssText = `
+                background: none;
+                border: none;
+                font-size: 1.2em;
+                cursor: pointer;
+                margin-left: auto;
+                padding: 0;
+                width: 20px;
+                height: 20px;
+            `;
+        closeBtn.addEventListener('click', () => {
+          message.style.transition = 'opacity 0.3s ease';
+          message.style.opacity = '0';
+          setTimeout(() => message.remove(), 300);
+        });
+
+        if (!message.querySelector('.flash-close')) {
+          message.style.display = 'flex';
+          message.style.alignItems = 'center';
+          message.appendChild(closeBtn);
+        }
+      });
+    }
+
+    function showError(message) {
+      // Criar mensagem de erro temporária
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'flash-message flash-error';
+      errorDiv.textContent = message;
+      errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 1000;
+            max-width: 300px;
+        `;
+
+      document.body.appendChild(errorDiv);
+
+      setTimeout(() => {
+        errorDiv.style.transition = 'opacity 0.3s ease';
+        errorDiv.style.opacity = '0';
+        setTimeout(() => errorDiv.remove(), 300);
+      }, 5000);
+    }
+  </script>
+</body>
+
+</html>

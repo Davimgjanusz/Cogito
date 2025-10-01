@@ -1,0 +1,33 @@
+import sqlite3
+
+# Limpar todos os bancos de dados
+def limpar_bancos():
+    # Banco de login
+    conn_login = sqlite3.connect('login.db')
+    cursor_login = conn_login.cursor()
+    cursor_login.execute("DELETE FROM usuarios")
+    cursor_login.execute("DELETE FROM sqlite_sequence WHERE name='usuarios'")
+    conn_login.commit()
+    conn_login.close()
+    
+    # Banco de perfil
+    conn_perfil = sqlite3.connect('perfil.db')
+    cursor_perfil = conn_perfil.cursor()
+    cursor_perfil.execute("DELETE FROM perfis")
+    cursor_perfil.execute("DELETE FROM sqlite_sequence WHERE name='perfis'")
+    conn_perfil.commit()
+    conn_perfil.close()
+    
+    # Banco de posts
+    conn_posts = sqlite3.connect('posts.db')
+    cursor_posts = conn_posts.cursor()
+    cursor_posts.execute("DELETE FROM comentarios")
+    cursor_posts.execute("DELETE FROM posts")
+    cursor_posts.execute("DELETE FROM sqlite_sequence WHERE name IN ('posts', 'comentarios')")
+    conn_posts.commit()
+    conn_posts.close()
+    
+    print("Todos os bancos de dados foram limpos!")
+
+# Executar limpeza
+limpar_bancos()
